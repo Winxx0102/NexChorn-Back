@@ -4,9 +4,9 @@ import { ChroniclesService } from './chronicles.service';
 import { CreateChronicleDto } from './dto/create-chronicle.dto';
 import { UpdateChronicleDto } from './dto/update-chronicle.dto';
 import { Role } from '@prisma/client';
-import { Roles } from '@/auth/decorators/roles.decorator';
-import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
-import { RolesGuard } from '@/auth/guards/roles.guard';
+import { Roles } from '../auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { RolesGuard } from '../auth/guards/roles.guard';
 
 // Define cómo es tu usuario en el request
 interface RequestWithUser extends Request {
