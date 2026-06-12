@@ -3,14 +3,9 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
-import { ExpressAdapter } from '@nestjs/platform-express';
-import express from 'express';
 
-// Exportamos esta instancia para que el archivo api/index.js pueda usarla
-export const expressApp = express();
-
-export async function bootstrap(appInstance: any) {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(appInstance));
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
 
   app.use(helmet());
   app.enableCors({
@@ -21,13 +16,11 @@ export async function bootstrap(appInstance: any) {
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 
-  await app.init();
-  return app;
+  // Render asigna un puerto mediante la variable de entorno PORT
+  const port = process.env.PORT || 3000;
+  
+  await app.listen(port, '0.0.0.0');
+  console.log(`🚀 Application is running on: http://0.0.0.0:${port}`);
 }
 
-// ARRANQUE LOCAL
-if (process.env.NODE_ENV !== 'production') {
-  bootstrap(expressApp).then((app) => {
-    expressApp.listen(3000, () => console.log('🚀 Local: http://localhost:3000'));
-  });
-}
+bootstrap();
