@@ -6,9 +6,11 @@ import helmet from 'helmet';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 
-// Esta función configura la app
-export async function bootstrap(expressApp: any) {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
+// Exportamos esta instancia para que el archivo api/index.js pueda usarla
+export const expressApp = express();
+
+export async function bootstrap(appInstance: any) {
+  const app = await NestFactory.create(AppModule, new ExpressAdapter(appInstance));
 
   app.use(helmet());
   app.enableCors({
@@ -23,10 +25,9 @@ export async function bootstrap(expressApp: any) {
   return app;
 }
 
-// ARRANQUE LOCAL: Solo se ejecuta si estamos en desarrollo
+// ARRANQUE LOCAL
 if (process.env.NODE_ENV !== 'production') {
-  const server = express();
-  bootstrap(server).then((app) => {
-    server.listen(3000, () => console.log('🚀 Local: http://localhost:3000'));
+  bootstrap(expressApp).then((app) => {
+    expressApp.listen(3000, () => console.log('🚀 Local: http://localhost:3000'));
   });
 }

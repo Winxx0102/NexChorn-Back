@@ -1,17 +1,16 @@
-// api/index.js
 const { NestFactory } = require('@nestjs/core');
 const { AppModule } = require('../dist/src/app.module');
 const { ExpressAdapter } = require('@nestjs/platform-express');
 const express = require('express');
 
-let cachedApp;
+const expressApp = express();
+let isInitialized = false;
 
 module.exports = async (req, res) => {
-  if (!cachedApp) {
-    const expressApp = express();
+  if (!isInitialized) {
     const nestApp = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
     await nestApp.init();
-    cachedApp = expressApp;
+    isInitialized = true;
   }
-  return cachedApp(req, res);
+  return expressApp(req, res);
 };
