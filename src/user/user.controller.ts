@@ -5,14 +5,15 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
-import { ChroniclesService } from '@/chronicles/chronicles.service';
+import { ChroniclesService } from '../chronicles/chronicles.service';
 
 /* PROBANDO COMENTARIO EN LA BRANCH NUEVA */
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService,
-    private readonly chroniclesService: ChroniclesService,
-  ) { }
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly chroniclesService: ChroniclesService, // Inyección
+  ) {}
 
 
 
