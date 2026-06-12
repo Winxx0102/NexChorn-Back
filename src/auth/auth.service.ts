@@ -33,7 +33,7 @@ export class AuthService {
   console.log("--- Intento de Login ---");
   
   // 1. Buscar usuario
-  const user = await this.prisma.user.findUnique({ where: { email } });
+  const user = await this.prisma.user.findUnique({ where: { email: email } });
   if (!user) {
     console.log("Error: Usuario no encontrado");
     throw new UnauthorizedException('Credenciales incorrectas');
