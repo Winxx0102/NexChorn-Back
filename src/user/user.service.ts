@@ -16,22 +16,33 @@ export class UsersService {
   constructor(private prisma: PrismaService) { }
 
   async findAll(query: any) {
-    const search = query.search || ''
-    const where: any = {}
-    const { take, page, skip } = getPagination(query)
+  const search = query.search || ''
+  const where: any = {}
+  const { take, page, skip } = getPagination(query)
 
-    if (query.search) {
-      where.OR = [
-        { name: { contains: search } },
-        { email: { contains: search } }
-      ]
-    }
-
-    const data = await this.prisma.user.findMany({ where, take, skip })
-    const totalPages = await this.prisma.user.count({ where })
-
-    return { data, totalPages }
+  if (query.search) {
+    where.OR = [
+      { name: { contains: search } },
+      { email: { contains: search } }
+    ]
   }
+
+  // Agregamos el include para las crónicas
+  const data = await this.prisma.user.findMany({ 
+    where, 
+    take, 
+    skip,
+    include: {
+      _count: {
+        select: { chronicles: true }
+      }
+    }
+  })
+  
+  const totalPages = await this.prisma.user.count({ where })
+
+  return { data, totalPages }
+}
 
   async blockUser(id: number) {
     const user = await this.prisma.user.update({ where: { id }, data: { isBlocked: true } })
@@ -132,4 +143,7 @@ async countBlocked(): Promise<number> {
     where: { isBlocked: true }
   });
 }
+
+// Alternative listing with counts to avoid duplicate method name
+
 } 

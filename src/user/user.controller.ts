@@ -17,9 +17,12 @@ export class UsersController {
 
 
 
-  @Get('')
-  findAll(@Query() query) {
-    return this.usersService.findAll(query)
+@Get('')
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  async findAll(@Query() query) {
+    // Debes pasar el objeto 'query' al servicio para que la paginación y búsqueda funcionen
+    return await this.usersService.findAll(query);
   }
 
   @Post('register')
