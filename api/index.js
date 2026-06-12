@@ -1,15 +1,10 @@
 const { NestFactory } = require('@nestjs/core');
-const { AppModule } = require('../dist/src/app.module');
-const { ExpressAdapter } = require('@nestjs/platform-express');
-const express = require('express');
+const { AppModule } = require('../src/app.module'); // Importamos directamente de src
 
-const expressApp = express();
-
-const server = async () => {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
-  app.setGlobalPrefix('api'); // Si tus rutas empiezan con /api, esto es obligatorio
+module.exports = async (req, res) => {
+  const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
   await app.init();
-  return expressApp;
+  const instance = app.getHttpAdapter().getInstance();
+  return instance(req, res);
 };
-
-module.exports = server();
