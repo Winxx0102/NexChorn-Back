@@ -5,7 +5,6 @@ import { PrismaClient } from '@prisma/client';
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
     super({
-      log: ['error', 'warn'],
       datasources: {
         db: {
           url: process.env.DATABASE_URL,
@@ -16,9 +15,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   async onModuleInit() {
     try {
+      // Intentamos conectar con un timeout más permisivo
       await this.$connect();
+      console.log('✅ Conectado a Supabase');
     } catch (error) {
-      console.error('Error al conectar con la base de datos:', error);
+      console.error('❌ Error de conexión:', error);
     }
   }
 }
