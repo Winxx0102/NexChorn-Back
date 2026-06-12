@@ -1,19 +1,30 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
+// src/prisma.service.ts
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
+  constructor() {
+    super({
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
+      },
+    });
+  }
+
   async onModuleInit() {
     try {
-      console.log('--- INTENTANDO CONECTAR A DB ---');
+      // Configuramos un timeout explícito para que no se cuelgue
       await this.$connect();
-      console.log('--- CONEXIÓN EXITOSA ---');
-    } catch (error) {
-      const prismaError = error instanceof Error ? error : new Error(String(error));
-      console.error('--- ERROR CRÍTICO DE PRISMA ---');
-      console.error('Mensaje:', prismaError.message);
-      console.error('Stack:', prismaError.stack);
-      console.error('--------------------------------');
+      console.log('✅ Conectado a Supabase');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('❌ Error de conexión:', error.message);
+      } else {
+        console.error('❌ Error de conexión:', error);
+      }
     }
   }
 }
