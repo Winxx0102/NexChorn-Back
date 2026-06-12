@@ -11,14 +11,18 @@ export class AuthController {
   constructor(private authService: AuthService) { }
 
   @Post('login')
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Iniciar sesión y generar cookie' })
-  async login(
-    @Body() loginDto: LoginDto, 
-    @Res({ passthrough: true }) res: Response // 'passthrough' permite devolver JSON
-  ) {
-    return await this.authService.login(loginDto.email, loginDto.password, res);
-  }
+@HttpCode(HttpStatus.OK)
+@ApiOperation({ summary: 'Iniciar sesión y retornar token' })
+async login(@Body() loginDto: LoginDto) {
+  // Ahora solo llamamos al servicio y esperamos el token (string)
+  const token = await this.authService.login(loginDto);
+  
+  // Retornamos el objeto JSON directamente
+  return {
+    access_token: token,
+    message: 'Login exitoso'
+  };
+}
 
   @Get('logout')
   @UseGuards(JwtAuthGuard)

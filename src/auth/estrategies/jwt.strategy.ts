@@ -2,34 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
-import { JWT_SECRET } from '../constants/jwt';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      jwtFromRequest: ExtractJwt.fromExtractors([
-        (request) => {
-          // Verificamos si existe la cookie 'jwt'
-          const token = request.cookies?.jwt;
-
-          // SI NO HAY COOKIE, RETORNAMOS NULL
-          // Esto hace que Passport falle la autenticación inmediatamente ("chao")
-          if (!token) {
-            return null;
-          }
-
-          return token;
-        }
-      ]),
+      // Esta es la parte mágica: Passport ahora buscará automáticamente
+      // el header "Authorization" y extraerá el valor después de "Bearer"
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: JWT_SECRET,
+      // Asegúrate de que process.env.JWT_SECRET esté cargado correctamente en tu app
+      secretOrKey: process.env.JWT_SECRET,
     });
   }
 
   async validate(payload: JwtPayload) {
-    // Si llegamos aquí, es porque SÍ había cookie y era válida
+    // Si el token es válido, esto llena el objeto "req.user" en tus controladores
     return { userId: payload.sub, email: payload.email, role: payload.role };
   }
-
 }

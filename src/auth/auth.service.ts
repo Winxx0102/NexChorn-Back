@@ -3,6 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../../prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { Response } from 'express';
+import { LoginDto } from './dto/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,36 +14,62 @@ export class AuthService {
     return { message: 'Sesión Cerrada', status: 'success' }
 
   }
-async login(email: string, pass: string, res: Response) {
-  console.log("--- Intento de Login ---");
-  console.log("Email recibido:", email);
 
-  const user = await this.prisma.user.findUnique({ where: { email } });
+  private async validateUser(email: string, password: string) {
+    const user = await this.prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      return null;
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return null;
+    }
+
+    return user;
+  }
+
+  async login(loginDto: LoginDto): Promise<string> {
+    const user = await this.validateUser(loginDto.email, loginDto.password);
+    if (!user) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+
+  // Genera el token (usando tu JwtService)
+  const payload = { email: user.email, sub: user.id };
+  return this.jwtService.sign(payload); // Retorna solo el string del token
+}
+// async login(email: string, pass: string, res: Response) {
+//   console.log("--- Intento de Login ---");
+//   console.log("Email recibido:", email);
+
+//   const user = await this.prisma.user.findUnique({ where: { email } });
   
-  if (!user) {
-    console.log("Error: Usuario no encontrado en BD");
-    throw new UnauthorizedException('Usuario no encontrado');
-  }
+//   if (!user) {
+//     console.log("Error: Usuario no encontrado en BD");
+//     throw new UnauthorizedException('Usuario no encontrado');
+//   }
 
-  const isMatch = await bcrypt.compare(pass, user.password);
-  console.log("¿Contraseña coincide?:", isMatch);
+//   const isMatch = await bcrypt.compare(pass, user.password);
+//   console.log("¿Contraseña coincide?:", isMatch);
 
-  if (!isMatch) {
-    console.log("Error: Contraseña incorrecta");
-    throw new UnauthorizedException('Credenciales incorrectas');
-  }
+//   if (!isMatch) {
+//     console.log("Error: Contraseña incorrecta");
+//     throw new UnauthorizedException('Credenciales incorrectas');
+//   }
 
-  const payload = { sub: user.id, email: user.email, role: user.role };
-  const token = this.jwtService.sign(payload);
+//   const payload = { sub: user.id, email: user.email, role: user.role };
+//   const token = this.jwtService.sign(payload);
 
-// En tu Backend, donde haces el res.cookie
-res.cookie('jwt', token, {
-  httpOnly: true,
-  secure: true,    // Obligatorio en HTTP (sin https)
-  sameSite: 'none',
-  domain: 'undefined',  // Permite que la cookie viaje entre peticiones del mismo sitio
-  path: '/',
-});
-  console.log("Login exitoso, cookie enviada.");
-  return { state: 'success', message: 'Login exitoso' };
-}}
+// // En tu Backend, donde haces el res.cookie
+// res.cookie('jwt', token, {
+//   httpOnly: true,
+//   secure: true,    // Obligatorio en HTTP (sin https)
+//   sameSite: 'none',
+//   domain: 'undefined',  // Permite que la cookie viaje entre peticiones del mismo sitio
+//   path: '/',
+// });
+//   console.log("Login exitoso, cookie enviada.");
+//   return { state: 'success', message: 'Login exitoso' };
+// }
+}
