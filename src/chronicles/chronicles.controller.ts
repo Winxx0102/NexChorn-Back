@@ -29,21 +29,19 @@ export class ChroniclesController {
     // 1. Acceder al usuario inyectado por los Guards
     const user = req.user;
 
-    // 2. Debug para confirmar que el objeto llega
-    console.log("--- DEBUG: REQUEST ARRIVED ---");
-    console.log("Usuario en req.user:", user);
+console.log("--- DEBUG FINAL ---");
+  console.log("¿Existe req.user?:", !!user);
+  console.log("Objeto usuario:", user);
 
-    // 3. Validación defensiva: Si no hay usuario o ID, no podemos continuar
-    if (!user || !user.userId) {
-      console.error("ERROR: El usuario o el ID de usuario no están presentes en el request.");
-      throw new UnauthorizedException("Usuario no autenticado correctamente.");
-    }
+    if (!user || user.userId === undefined) {
+    throw new UnauthorizedException("El sistema de autenticación no pudo identificar al usuario.");
+  }
 
     const userId = Number(user.userId);
     console.log("UserID procesado para el servicio:", userId);
 
     // 4. Llamada al servicio
-    return this.chroniclesService.create(createChronicleDto, userId);
+    return this.chroniclesService.create(createChronicleDto, user.userId || userId);
   }
 
 

@@ -52,7 +52,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     console.log(`[JwtStrategy] 4. Mapeando usuario: ID=${payload.sub}, Email=${payload.email}`);
     
     return { 
-      userId: payload.sub, 
+      userId: Number(payload.sub), 
       email: payload.email, 
       role: payload.role 
     };
