@@ -12,12 +12,10 @@ async function bootstrap() {
 
   // CORS configurado directamente para tu frontend
 app.enableCors({
-  origin: ['https://nex-chorn-front.vercel.app'], 
+  origin: 'https://nex-chorn-front.vercel.app', // URL cruda, sin variables
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  credentials: true, 
+  credentials: true, // Esto es vital
   allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
-  preflightContinue: false,
-  optionsSuccessStatus: 204,
 });
   app.use(cookieParser());
 
