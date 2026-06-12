@@ -11,17 +11,14 @@ async function bootstrap() {
   app.use(helmet());
 
   // CORS configurado directamente para tu frontend
-  app.enableCors({
-    origin: [
-      'https://nex-chorn-front.vercel.app',
-      'http://localhost:5173', // Por si pruebas en local
-      'http://localhost:3000'
-    ],
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-    credentials: true,
-    allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
-  });
-
+app.enableCors({
+  origin: ['https://nex-chorn-front.vercel.app', 'http://localhost:5173', 'http://localhost:3000'],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Asegúrate de incluir OPTIONS
+  credentials: true,
+  allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
+  preflightContinue: false, // IMPORTANTE: Agrega esta línea
+  optionsSuccessStatus: 204 // IMPORTANTE: Agrega esta línea
+});
   app.use(cookieParser());
 
   app.useGlobalPipes(new ValidationPipe({
