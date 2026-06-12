@@ -5,11 +5,15 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { GetUser } from '../auth/decorators/get-user.decorator';
+import { ChroniclesService } from '@/chronicles/chronicles.service';
 
 /* PROBANDO COMENTARIO EN LA BRANCH NUEVA */
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService,
+    private readonly chroniclesService: ChroniclesService,
+  ) { }
+
 
 
   @Get('')
@@ -65,8 +69,10 @@ async getStats() {
   // Asegúrate de que tus servicios tengan estos métodos
   const totalUsers = await this.usersService.countTotal();
   const blockedUsers = await this.usersService.countBlocked();
-  
+  const totalchronicles = await this.chroniclesService.countTotal();
+
   return {
+    totalchronicles,
     totalUsers,
     blockedUsers,
     // Puedes añadir más métricas según tu DB
