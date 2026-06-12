@@ -6,17 +6,15 @@ const express = require('express');
 const expressApp = express();
 let nestApp;
 
-module.exports = async (req, res) => {
-  try {
-    if (!nestApp) {
-      nestApp = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
-      // Sin prefijo, como pediste
-      await nestApp.init();
-    }
-    return expressApp(req, res);
-  } catch (error) {
-    // ESTO VA A MOSTRAR EL ERROR REAL EN LOS LOGS DE VERCEL
-    console.error('ERROR CRÍTICO DE INICIALIZACIÓN:', error);
-    res.status(500).send({ error: 'Fallo al iniciar', details: error.message });
+// Esta es la función que Vercel necesita
+const server = async (req, res) => {
+  if (!nestApp) {
+    nestApp = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
+    // No ponemos prefijo, como pediste
+    await nestApp.init();
   }
+  return expressApp(req, res);
 };
+
+// EXPORTACIÓN OBLIGATORIA
+module.exports = server;
