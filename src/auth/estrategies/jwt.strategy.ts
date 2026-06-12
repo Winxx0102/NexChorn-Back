@@ -1,35 +1,40 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor() {
+  constructor(private configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
         (request) => {
-          // --- DEBUG DE EXTRACCIÓN ---
-          console.log("--- [JwtStrategy] Extrayendo cookie ---");
+          console.log("--- [JwtStrategy] 1. Extrayendo cookie ---");
           const token = request?.cookies?.['jwt'];
-          console.log("¿Token encontrado en cookie?:", token ? "SÍ" : "NO (null/undefined)");
+          
+          // Debug visual: ¿Llega algo?
+          console.log(`[JwtStrategy] ¿Token presente?: ${token ? 'SÍ (' + token.substring(0, 10) + '...)' : 'NO'}`);
+          
           return token;
         }
       ]),
       ignoreExpiration: false,
-      secretOrKey: process.env.JWT_SECRET,
+      secretOrKey: configService.get<string>('JWT_SECRET'),
     });
   }
 
   async validate(payload: any) {
-    // --- DEBUG DE VALIDACIÓN ---
-    console.log("--- [JwtStrategy] Validación del payload ---");
-    console.log("Payload decodificado:", payload);
-
+    // Si este log NO aparece, significa que el token falló la validación de firma
+    console.log("--- [JwtStrategy] 2. Validación iniciada ---");
+    
     if (!payload) {
-      console.log("Error: El token no pudo ser verificado con el SECRET_KEY");
+      console.log("[JwtStrategy] ERROR: Payload es nulo/inválido");
       throw new UnauthorizedException();
     }
-console.log("Payload:", payload);
+
+    // Si esto aparece, ¡la autenticación fue exitosa!
+    console.log("[JwtStrategy] 3. Payload validado exitosamente:", payload);
+    
     return { userId: payload.sub, email: payload.email, role: payload.role };
   }
 }
