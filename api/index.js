@@ -9,7 +9,7 @@ let nestApp;
 module.exports = async (req, res) => {
   if (!nestApp) {
     nestApp = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
-    nestApp.setGlobalPrefix('api');
+    nestApp.setGlobalPrefix('');
     await nestApp.init();
   }
   return expressApp(req, res);
