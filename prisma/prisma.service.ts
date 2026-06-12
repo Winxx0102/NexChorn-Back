@@ -3,23 +3,17 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
-  constructor() {
-    super({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
-    });
-  }
-
   async onModuleInit() {
     try {
-      // Intentamos conectar con un timeout más permisivo
+      console.log('--- INTENTANDO CONECTAR A DB ---');
       await this.$connect();
-      console.log('✅ Conectado a Supabase');
+      console.log('--- CONEXIÓN EXITOSA ---');
     } catch (error) {
-      console.error('❌ Error de conexión:', error);
+      const prismaError = error instanceof Error ? error : new Error(String(error));
+      console.error('--- ERROR CRÍTICO DE PRISMA ---');
+      console.error('Mensaje:', prismaError.message);
+      console.error('Stack:', prismaError.stack);
+      console.error('--------------------------------');
     }
   }
 }
