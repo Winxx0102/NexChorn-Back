@@ -29,7 +29,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
       console.log("Error: El token no pudo ser verificado con el SECRET_KEY");
       throw new UnauthorizedException();
     }
-
+console.log("Payload:", payload);
     return { userId: payload.sub, email: payload.email, role: payload.role };
   }
 }
