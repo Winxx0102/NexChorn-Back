@@ -10,6 +10,7 @@ import { ChroniclesModule } from './chronicles/chronicles.module';
 
 @Module({
   imports: [
+    ChroniclesModule,
     // 2. Configuración global de variables de entorno
     ConfigModule.forRoot({
       isGlobal: true, // Esto hace que el ConfigService esté disponible en toda la app
