@@ -38,8 +38,9 @@ async login(email: string, pass: string, res: Response) {
 // En tu Backend, donde haces el res.cookie
 res.cookie('jwt', token, {
   httpOnly: true,
-  secure: false,    // Obligatorio en HTTP (sin https)
-  sameSite: 'lax',  // Permite que la cookie viaje entre peticiones del mismo sitio
+  secure: true,    // Obligatorio en HTTP (sin https)
+  sameSite: 'none',
+  domain: 'undefined',  // Permite que la cookie viaje entre peticiones del mismo sitio
   path: '/',
 });
   console.log("Login exitoso, cookie enviada.");
