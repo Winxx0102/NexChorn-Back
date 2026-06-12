@@ -14,7 +14,4 @@ export class CreateChronicleDto {
   @IsNotEmpty()
   content: string;
 
- 
-  @IsNotEmpty()
-  userId: number;
 }
