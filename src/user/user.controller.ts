@@ -43,19 +43,19 @@ export class UsersController {
   }
 
   @Patch('block/:id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   blockUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.blockUser(id)
   }
 
   @Patch('unblock/:id')
-  @Roles(Role.ADMIN)
+  @Roles(Role.ADMIN, Role.SUPERADMIN)
   unBlockUser(@Param('id', ParseIntPipe) id: number) {
     return this.usersService.unBlockUser(id)
   }
 
   @Patch('role/:id')
-  @Roles(Role.ADMIN)
+  @Roles( Role.SUPERADMIN) // Solo superadmin pueden cambiar roles
   @UseGuards(JwtAuthGuard, RolesGuard)
   async updateRole(
     @Param('id', ParseIntPipe) id: number,
@@ -63,8 +63,10 @@ export class UsersController {
   ) {
     return this.usersService.updateRole(id, role);
   }
+
+
   @Get('admin/stats')
-@Roles(Role.ADMIN) // Solo admin puede ver métricas
+@Roles(Role.ADMIN, Role.SUPERADMIN) // Solo admin y superadmin pueden ver métricas
 @UseGuards(JwtAuthGuard, RolesGuard)
 async getStats() {
   // Asegúrate de que tus servicios tengan estos métodos

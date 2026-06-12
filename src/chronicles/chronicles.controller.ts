@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UnauthorizedException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { Request } from 'express';
 import { ChroniclesService } from './chronicles.service';
 import { CreateChronicleDto } from './dto/create-chronicle.dto';
@@ -36,6 +36,9 @@ console.log("--- DEBUG FINAL ---");
 
     if (!user || user.userId === undefined) {
     throw new UnauthorizedException("El sistema de autenticación no pudo identificar al usuario.");
+  }
+  if (user.isBlocked) {
+    throw new ForbiddenException("Tu cuenta está bloqueada y no puedes crear crónicas.");
   }
 
     const userId = Number(user.userId);
