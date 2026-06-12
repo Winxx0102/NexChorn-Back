@@ -22,11 +22,20 @@ export class ChroniclesController {
   constructor(private readonly chroniclesService: ChroniclesService) {}
 
 
+
+
   @Roles(Role.SUPERADMIN, Role.ADMIN, Role.USER)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
-  create(@Body() createChronicleDto: CreateChronicleDto) {
-    return this.chroniclesService.create(createChronicleDto);
+  create(
+    @Body() createChronicleDto: CreateChronicleDto,
+    @Req() req: any // <--- Inyectamos el objeto de petición
+  ) {
+    // El 'req.user' es el objeto que devolviste en tu JwtStrategy
+    const userId = req.user.userId;
+
+    // Pasamos el userId dentro del DTO y llamamos al servicio con un solo argumento
+    return this.chroniclesService.create({ ...createChronicleDto, userId });
   }
 
 

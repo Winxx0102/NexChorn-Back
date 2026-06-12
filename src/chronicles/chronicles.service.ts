@@ -6,11 +6,14 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class ChroniclesService {
   constructor(private prisma: PrismaService) {}
 
-  create(createChronicleDto: CreateChronicleDto) {
-    return this.prisma.chronicles.create({
-      data: createChronicleDto as any,
-    });
-  }
+async create(createChronicleDto: CreateChronicleDto, userId: number) {
+  return this.prisma.chronicles.create({
+    data: {
+      ...createChronicleDto,
+      userId,
+    },
+  });
+}
 
   findAll() {
     return this.prisma.chronicles.findMany();

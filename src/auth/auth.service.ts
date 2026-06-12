@@ -57,7 +57,7 @@ export class AuthService {
     secure: true,    // Obligatorio para sameSite: 'none'
     sameSite: 'none', // Permite que la cookie viaje entre dominios (Frontend vs Backend)
     path: '/',
-    maxAge: 3600000 // 1 hora de duración
+    maxAge: 7 * 24 * 60 * 60 * 1000// 1 hora de duración
   });
 
   return { state: 'success', message: 'Login exitoso' };
