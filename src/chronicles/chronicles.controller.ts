@@ -34,8 +34,8 @@ export class ChroniclesController {
     // El 'req.user' es el objeto que devolviste en tu JwtStrategy
     const userId = req.user.userId;
 
-    // Pasamos el userId dentro del DTO y llamamos al servicio con un solo argumento
-    return this.chroniclesService.create({ ...createChronicleDto, userId });
+    // Llamamos al servicio con los dos argumentos esperados
+    return this.chroniclesService.create(createChronicleDto, Number(userId));
   }
 
 
