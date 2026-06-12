@@ -6,13 +6,20 @@ import { PrismaService } from '../../prisma/prisma.service';
 export class ChroniclesService {
   constructor(private prisma: PrismaService) {}
 
-async create(createChronicleDto: CreateChronicleDto, userId: number) {
-  return this.prisma.chronicles.create({
-    data: {
-      ...createChronicleDto,
-      userId,
-    },
-  });
+@Post()
+@UseGuards(JwtAuthGuard, RolesGuard)
+create(
+  @Body() createChronicleDto: CreateChronicleDto, 
+  @Req() req: any // Inyectamos la petición aquí
+) {
+  // Extraemos el ID del usuario del objeto que JwtAuthGuard ya validó
+  const userId = req.user.userId; 
+  
+  // Imprime aquí para depurar, no en el servicio
+  console.log("Usuario que intenta crear crónica:", userId);
+  
+  // Pasamos solo los datos limpios al servicio
+  return this.chroniclesService.create(createChronicleDto, userId);
 }
 
   findAll() {

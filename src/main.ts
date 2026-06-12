@@ -8,16 +8,17 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(helmet());
-app.enableCors({
-  origin: true, // Asegúrate de que sea EXACTAMENTE tu URL de Vercel
-// origin: [
-//     'https://nex-chorn-front.vercel.app', 
-//     'https://nex-chorn-front-8qrlkn1vh-winxx0102-s-projects.vercel.app' // ¡Añade esta también!
-//   ],// Asegúrate de que sea EXACTAMENTE tu URL de Vercel
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  credentials: true, // Esto es vital si usas cookies
-  allowedHeaders: 'Content-Type,Authorization', // Asegúrate de incluir los headers que usas
-});
+ app.enableCors({
+    // Define explícitamente tu dominio, NO uses 'true'
+    origin: [
+      'https://nex-chorn-front.vercel.app', 
+      'http://localhost:3000' // Incluye tu localhost para desarrollo
+    ],
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    credentials: true, // Esto es vital
+    allowedHeaders: 'Content-Type,Authorization,X-Requested-With', 
+    exposedHeaders: ['set-cookie'], // Opcional, pero ayuda a veces
+  });
   app.use(cookieParser());
   app.useGlobalPipes(new ValidationPipe({ whitelist: true, transform: true }));
 

@@ -31,7 +31,12 @@ export class ChroniclesController {
     @Body() createChronicleDto: CreateChronicleDto,
     @Req() req: any // <--- Inyectamos el objeto de petición
   ) {
-    // El 'req.user' es el objeto que devolviste en tu JwtStrategy
+    // El 'req.user' es el obje
+    // to que devolviste en tu JwtStrategy
+
+    console.log("--- DEBUG DE COOKIE ---");
+  console.log("Cookies recibidas por el servidor:", req.cookies);
+  console.log("Usuario extraído del token:", req.user);
     const userId = req.user.userId;
 
     // Llamamos al servicio con los dos argumentos esperados
