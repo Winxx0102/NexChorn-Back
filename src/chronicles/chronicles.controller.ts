@@ -24,8 +24,8 @@ export class ChroniclesController {
 
 
 
-@Roles(Role.SUPERADMIN, Role.ADMIN, Role.USER)
-@UseGuards(JwtAuthGuard, RolesGuard)
+
+@UseGuards(JwtAuthGuard)
 @Post()
 create(@Body() createChronicleDto: CreateChronicleDto, @Req() req: any) {
   
