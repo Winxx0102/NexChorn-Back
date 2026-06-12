@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config'; // 1. Importa esto
 import { PrismaModule } from '../prisma/prisma.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './user/user.module';
@@ -7,14 +8,15 @@ import { MulterModule } from '@nestjs/platform-express';
 import { join } from 'path';
 import { ChroniclesModule } from './chronicles/chronicles.module';
 
-
 @Module({
   imports: [
-    // Asegúrate de que Prisma sea Global para evitar errores de inyección
+    // 2. Configuración global de variables de entorno
+    ConfigModule.forRoot({
+      isGlobal: true, // Esto hace que el ConfigService esté disponible en toda la app
+    }),
+
     PrismaModule, 
     
-    // Si estás en desarrollo local, esto funciona. 
-    // En producción (Vercel), no guardes archivos en el sistema de archivos.
     ...(process.env.NODE_ENV !== 'production' ? [
       ServeStaticModule.forRoot({
         rootPath: join(process.cwd(), 'public'),
