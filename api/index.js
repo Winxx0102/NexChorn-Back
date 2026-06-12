@@ -1,18 +1,15 @@
 // api/index.js
 const { NestFactory } = require('@nestjs/core');
 const { AppModule } = require('../dist/src/app.module');
-const { ExpressAdapter } = require('@nestjs/platform-express');
-const express = require('express');
-
-const server = express();
+const { PrismaService } = require('../dist/src/prisma/prisma.service');
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
-  // IMPORTANTE: Esto asegura que todas tus rutas tengan el prefijo /api
-  app.setGlobalPrefix('api'); 
+  const app = await NestFactory.create(AppModule);
+  
+  // Forzamos la conexión a la base de datos antes de que la app escuche
+  const prisma = app.get(PrismaService);
+  await prisma.onModuleInit(); // Esto ejecutará tu console.log()
+  
   await app.init();
+  return app;
 }
-
-bootstrap();
-
-module.exports = server;

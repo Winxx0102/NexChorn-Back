@@ -10,19 +10,15 @@ import { ChroniclesModule } from './chronicles/chronicles.module';
 
 @Module({
   imports: [
+    PrismaModule, // Asegúrate de que esté aquí
     ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'public'), // Path to your local docs folder
-      serveRoot: '/public', // Optional: Files will be available at http://localhost:3000/docs
+      rootPath: join(process.cwd(), 'public'),
+      serveRoot: '/public',
     }),
-    MulterModule.register({
-      dest: '/public/uploads'
-    }),
-
-    PrismaModule,
+    // ... tus otros módulos
     AuthModule,
     UsersModule,
     ChroniclesModule,
-
   ],
   providers: [],
 })
