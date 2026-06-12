@@ -28,15 +28,16 @@ export class ChroniclesController {
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Post()
 create(@Body() createChronicleDto: CreateChronicleDto, @Req() req: any) {
+  
+  
   console.log("--- DEBUG: REQUEST ARRIVED ---");
   console.log("1. Cookies recibidas:", req.cookies); // ¿Existe 'jwt'?
   console.log("2. Usuario detectado en req.user:", req.user); // ¿Es null o undefined?
-
-  if (!req.user) {
-    console.log("!!! ERROR: El guard no logró autenticar al usuario");
+  console.log("UserID extraído:", req.user.userId);
+  if (!req.user.userId) {
+    console.log("la propiedad 'userId' no está presente en req.user. Verifique la estrategia JWT y asegúrese de que el payload incluya 'userId'.");
   }
-
-  const userId = req.user?.userId;
+const userId = req.user?.sub || req.user?.userId;
   return this.chroniclesService.create(createChronicleDto, Number(userId));
 }
 
