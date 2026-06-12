@@ -12,12 +12,13 @@ async function bootstrap() {
 
   // CORS configurado directamente para tu frontend
 app.enableCors({
-  origin: ['https://nex-chorn-front.vercel.app', 'http://localhost:5173', 'http://localhost:3000'],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS', // Asegúrate de incluir OPTIONS
-  credentials: true,
+  // Asegúrate de que no haya espacios extra y sea la URL completa
+  origin: ['https://nex-chorn-front.vercel.app'],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+  credentials: true, // Esto es lo que causa el conflicto con '*'
   allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
-  preflightContinue: false, // IMPORTANTE: Agrega esta línea
-  optionsSuccessStatus: 204 // IMPORTANTE: Agrega esta línea
+  preflightContinue: false,
+  optionsSuccessStatus: 204,
 });
   app.use(cookieParser());
 
