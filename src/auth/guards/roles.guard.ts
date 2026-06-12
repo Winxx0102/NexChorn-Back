@@ -8,38 +8,43 @@ export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {
-    // Obtenemos los roles requeridos del decorador @Roles()
+    // --- DEBUG 1: ¿Qué espera este endpoint? ---
     const requiredRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
       context.getHandler(),
       context.getClass(),
     ]);
+    console.log('[RolesGuard] Roles requeridos:', requiredRoles);
 
-    // Si no hay roles requeridos, permitimos el acceso
     if (!requiredRoles || requiredRoles.length === 0) {
+      console.log('[RolesGuard] No se requieren roles, acceso permitido.');
       return true;
     }
 
-    // Obtenemos la solicitud HTTP
     const request = context.switchToHttp().getRequest();
-
-    // Obtenemos el usuario autenticado (populado por JwtStrategy)
     const user = request.user;
 
-    // Si no hay usuario (no hay cookie válida), rechazamos
+    // --- DEBUG 2: ¿Quién es el usuario? ---
+    console.log('[RolesGuard] Usuario detectado en el Request:', user);
+
     if (!user) {
+      console.log('[RolesGuard] ERROR: El usuario es undefined. ¿Pasó el JwtAuthGuard?');
       throw new ForbiddenException('No hay usuario autenticado');
     }
 
-    // Obtenemos el rol del usuario desde el JWT (request.user.role)
     const userRole = user.role;
+    console.log(`[RolesGuard] Verificando rol. Usuario tiene: '${userRole}'`);
 
-    // Verificamos si el rol del usuario está en los roles requeridos
-    if (!requiredRoles.includes(userRole as Role)) {
+    // --- DEBUG 3: ¿Coincide el rol? ---
+    const hasRole = requiredRoles.includes(userRole as Role);
+    
+    if (!hasRole) {
+      console.log(`[RolesGuard] ERROR: '${userRole}' no está en la lista de permitidos: [${requiredRoles.join(', ')}]`);
       throw new ForbiddenException(
-        `Se requiere al menos uno de los siguientes roles: ${requiredRoles.join(', ')}. Tu rol actual: ${userRole}`
+        `Se requiere al menos uno de estos roles: ${requiredRoles.join(', ')}. Tu rol actual: ${userRole}`
       );
     }
 
+    console.log('[RolesGuard] ¡Éxito! Rol validado correctamente.');
     return true;
   }
 }

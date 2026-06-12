@@ -24,24 +24,21 @@ export class ChroniclesController {
 
 
 
-  @Roles(Role.SUPERADMIN, Role.ADMIN, Role.USER)
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Post()
-  create(
-    @Body() createChronicleDto: CreateChronicleDto,
-    @Req() req: any // <--- Inyectamos el objeto de petición
-  ) {
-    // El 'req.user' es el obje
-    // to que devolviste en tu JwtStrategy
+@Roles(Role.SUPERADMIN, Role.ADMIN, Role.USER)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Post()
+create(@Body() createChronicleDto: CreateChronicleDto, @Req() req: any) {
+  console.log("--- DEBUG: REQUEST ARRIVED ---");
+  console.log("1. Cookies recibidas:", req.cookies); // ¿Existe 'jwt'?
+  console.log("2. Usuario detectado en req.user:", req.user); // ¿Es null o undefined?
 
-    console.log("--- DEBUG DE COOKIE ---");
-  console.log("Cookies recibidas por el servidor:", req.cookies);
-  console.log("Usuario extraído del token:", req.user);
-    const userId = req.user.userId;
-
-    // Llamamos al servicio con los dos argumentos esperados
-    return this.chroniclesService.create(createChronicleDto, Number(userId));
+  if (!req.user) {
+    console.log("!!! ERROR: El guard no logró autenticar al usuario");
   }
+
+  const userId = req.user?.userId;
+  return this.chroniclesService.create(createChronicleDto, Number(userId));
+}
 
 
   @UseGuards(JwtAuthGuard)
