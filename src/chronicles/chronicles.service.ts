@@ -55,6 +55,8 @@ async findByUser(userId: number) {
     },
   });
 }
-
+async countTotal(): Promise<number> {
+  return await this.prisma.chronicles.count();
+}
 
 }

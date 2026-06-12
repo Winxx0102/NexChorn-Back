@@ -58,4 +58,18 @@ export class UsersController {
   ) {
     return this.usersService.updateRole(id, role);
   }
+  @Get('admin/stats')
+@Roles(Role.ADMIN) // Solo admin puede ver métricas
+@UseGuards(JwtAuthGuard, RolesGuard)
+async getStats() {
+  // Asegúrate de que tus servicios tengan estos métodos
+  const totalUsers = await this.usersService.countTotal();
+  const blockedUsers = await this.usersService.countBlocked();
+  
+  return {
+    totalUsers,
+    blockedUsers,
+    // Puedes añadir más métricas según tu DB
+  };
+}
 }

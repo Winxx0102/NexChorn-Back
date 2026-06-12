@@ -123,4 +123,13 @@ export class UsersService {
     const { password, ...result } = user;
     return result;
   }
+  async countTotal(): Promise<number> {
+  return await this.prisma.user.count();
+}
+
+async countBlocked(): Promise<number> {
+  return await this.prisma.user.count({
+    where: { isBlocked: true }
+  });
+}
 } 
