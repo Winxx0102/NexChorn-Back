@@ -9,10 +9,11 @@ async function bootstrap() {
 
   app.use(helmet());
 app.enableCors({
-origin: [
-    'https://nex-chorn-front.vercel.app', 
-    'https://nex-chorn-front-8qrlkn1vh-winxx0102-s-projects.vercel.app' // ¡Añade esta también!
-  ],// Asegúrate de que sea EXACTAMENTE tu URL de Vercel
+  origin: true, // Asegúrate de que sea EXACTAMENTE tu URL de Vercel
+// origin: [
+//     'https://nex-chorn-front.vercel.app', 
+//     'https://nex-chorn-front-8qrlkn1vh-winxx0102-s-projects.vercel.app' // ¡Añade esta también!
+//   ],// Asegúrate de que sea EXACTAMENTE tu URL de Vercel
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   credentials: true, // Esto es vital si usas cookies
   allowedHeaders: 'Content-Type,Authorization', // Asegúrate de incluir los headers que usas
