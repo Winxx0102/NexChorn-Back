@@ -7,17 +7,24 @@ import { JwtPayload } from '../interfaces/jwt-payload.interface';
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
     super({
-      // Esta es la parte mágica: Passport ahora buscará automáticamente
-      // el header "Authorization" y extraerá el valor después de "Bearer"
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      // Cambiamos la forma de extraer el JWT
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        (request) => {
+          let token = null;
+          // Asumimos que tu cookie se llama 'token'. 
+          // Si tu backend la llama de otra forma (ej: 'auth_cookie'), cámbialo aquí.
+          if (request && request.cookies) {
+            token = request?.cookies['jwt']; 
+          }
+          return token;
+        }
+      ]),
       ignoreExpiration: false,
-      // Asegúrate de que process.env.JWT_SECRET esté cargado correctamente en tu app
       secretOrKey: process.env.JWT_SECRET,
     });
   }
 
   async validate(payload: JwtPayload) {
-    // Si el token es válido, esto llena el objeto "req.user" en tus controladores
     return { userId: payload.sub, email: payload.email, role: payload.role };
   }
 }

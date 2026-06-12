@@ -25,51 +25,41 @@ export class AuthService {
     if (!isMatch) {
       return null;
     }
-
+    // If password matches, return the user (omit sensitive fields if needed)
     return user;
   }
 
-  async login(loginDto: LoginDto): Promise<string> {
-    const user = await this.validateUser(loginDto.email, loginDto.password);
-    if (!user) {
-      throw new UnauthorizedException('Credenciales inválidas');
-    }
-
-  // Genera el token (usando tu JwtService)
-  const payload = { email: user.email, sub: user.id };
-  return this.jwtService.sign(payload); // Retorna solo el string del token
-}
-// async login(email: string, pass: string, res: Response) {
-//   console.log("--- Intento de Login ---");
-//   console.log("Email recibido:", email);
-
-//   const user = await this.prisma.user.findUnique({ where: { email } });
+  async login(email: string, pass: string, res: Response) {
+  console.log("--- Intento de Login ---");
   
-//   if (!user) {
-//     console.log("Error: Usuario no encontrado en BD");
-//     throw new UnauthorizedException('Usuario no encontrado');
-//   }
+  // 1. Buscar usuario
+  const user = await this.prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    console.log("Error: Usuario no encontrado");
+    throw new UnauthorizedException('Credenciales incorrectas');
+  }
 
-//   const isMatch = await bcrypt.compare(pass, user.password);
-//   console.log("¿Contraseña coincide?:", isMatch);
+  // 2. Verificar contraseña
+  const isMatch = await bcrypt.compare(pass, user.password);
+  if (!isMatch) {
+    console.log("Error: Contraseña incorrecta");
+    throw new UnauthorizedException('Credenciales incorrectas');
+  }
 
-//   if (!isMatch) {
-//     console.log("Error: Contraseña incorrecta");
-//     throw new UnauthorizedException('Credenciales incorrectas');
-//   }
+  // 3. Generar el JWT
+  const payload = { sub: user.id, email: user.email, role: user.role };
+  const token = this.jwtService.sign(payload);
 
-//   const payload = { sub: user.id, email: user.email, role: user.role };
-//   const token = this.jwtService.sign(payload);
+  // 4. Configurar la cookie correctamente
+  // Nota: Elimina la propiedad "domain: 'undefined'", eso es incorrecto.
+  res.cookie('jwt', token, {
+    httpOnly: true,
+    secure: true,    // Obligatorio para sameSite: 'none'
+    sameSite: 'none', // Permite que la cookie viaje entre dominios (Frontend vs Backend)
+    path: '/',
+    maxAge: 3600000 // 1 hora de duración
+  });
 
-// // En tu Backend, donde haces el res.cookie
-// res.cookie('jwt', token, {
-//   httpOnly: true,
-//   secure: true,    // Obligatorio en HTTP (sin https)
-//   sameSite: 'none',
-//   domain: 'undefined',  // Permite que la cookie viaje entre peticiones del mismo sitio
-//   path: '/',
-// });
-//   console.log("Login exitoso, cookie enviada.");
-//   return { state: 'success', message: 'Login exitoso' };
-// }
+  return { state: 'success', message: 'Login exitoso' };
+}
 }
