@@ -10,12 +10,18 @@ import { ChroniclesModule } from './chronicles/chronicles.module';
 
 @Module({
   imports: [
-    PrismaModule, // Asegúrate de que esté aquí
-    ServeStaticModule.forRoot({
-      rootPath: join(process.cwd(), 'public'),
-      serveRoot: '/public',
-    }),
-    // ... tus otros módulos
+    // Asegúrate de que Prisma sea Global para evitar errores de inyección
+    PrismaModule, 
+    
+    // Si estás en desarrollo local, esto funciona. 
+    // En producción (Vercel), no guardes archivos en el sistema de archivos.
+    ...(process.env.NODE_ENV !== 'production' ? [
+      ServeStaticModule.forRoot({
+        rootPath: join(process.cwd(), 'public'),
+        serveRoot: '/public',
+      }),
+    ] : []),
+
     AuthModule,
     UsersModule,
     ChroniclesModule,

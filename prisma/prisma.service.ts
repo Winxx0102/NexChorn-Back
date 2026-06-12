@@ -1,30 +1,23 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-// src/prisma.service.ts
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
   constructor() {
+    // No pases el datasource manualmente si ya tienes DATABASE_URL en el .env
+    // Prisma toma la variable automáticamente por defecto.
     super({
-      datasources: {
-        db: {
-          url: process.env.DATABASE_URL,
-        },
-      },
+      log: ['error', 'warn'],
     });
   }
 
   async onModuleInit() {
     try {
-      // Configuramos un timeout explícito para que no se cuelgue
       await this.$connect();
-      console.log('✅ Conectado a Supabase');
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('❌ Error de conexión:', error.message);
-      } else {
-        console.error('❌ Error de conexión:', error);
-      }
+    } catch (error) {
+      // Si falla, es vital que leamos por qué en el log
+      console.error('❌ Error fatal de Prisma:', error);
+      throw error; // Lanzar el error ayuda a Nest a entender que el módulo falló
     }
   }
 }

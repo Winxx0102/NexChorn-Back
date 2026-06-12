@@ -1,23 +1,31 @@
-
-
 const { NestFactory } = require('@nestjs/core');
 const { AppModule } = require('../dist/src/app.module');
 const { ExpressAdapter } = require('@nestjs/platform-express');
 const express = require('express');
 
-const expressApp = express();
+// Creamos la instancia fuera de la exportación para mantenerla en caché (Warm Start)
 let app;
+
+async function bootstrap() {
+  const expressApp = express();
+  
+  // Usamos el adaptador correctamente
+  const nestApp = await NestFactory.create(
+    AppModule, 
+    new ExpressAdapter(expressApp)
+  );
+
+  nestApp.setGlobalPrefix('api');
+  
+  // IMPORTANTE: init() es suficiente, no necesitas escuchar puerto
+  await nestApp.init();
+  
+  return expressApp;
+}
 
 module.exports = async (req, res) => {
   if (!app) {
-    app = await NestFactory.create(AppModule, new ExpressAdapter(expressApp));
-    app.setGlobalPrefix('api');
-    await app.init();
-    // LOGEAR RUTAS PARA DEPURAR
-    const serverRoutes = expressApp._router.stack
-      .filter(r => r.route)
-      .map(r => r.route.path);
-    console.log("Rutas detectadas:", serverRoutes);
+    app = await bootstrap();
   }
-  return expressApp(req, res);
+  return app(req, res);
 };
