@@ -10,10 +10,7 @@ async function bootstrap() {
   app.use(helmet());
  app.enableCors({
     // Define explícitamente tu dominio, NO uses 'true'
-    origin: [
-      'https://nex-chorn-front.vercel.app', 
-      'http://localhost:3000' // Incluye tu localhost para desarrollo
-    ],
+    origin: [true], // Incluye tu localhost para desarrollo
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true, // Esto es vital
     allowedHeaders: 'Content-Type,Authorization,X-Requested-With', 
