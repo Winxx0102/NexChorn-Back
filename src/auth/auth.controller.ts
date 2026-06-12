@@ -13,12 +13,12 @@ export class AuthController {
   @Post('login')
 @HttpCode(HttpStatus.OK)
 @ApiOperation({ summary: 'Iniciar sesión y retornar token' })
-async login(@Body() any: any) {
+async login(@Body() loginDto: LoginDto, @Res({ passthrough: true }) res: Response) {
   // Ahora solo llamamos al servicio y esperamos el token (string)
   // authService.login expects three arguments in its current signature.
   // Provide undefined for the optional parameters to match the expected arity.
-  const token = await this.authService.login(any, undefined, undefined);
-  
+  const token = await this.authService.login(loginDto.email, loginDto.password, res);
+
   // Retornamos el objeto JSON directamente
   return {
     access_token: token,

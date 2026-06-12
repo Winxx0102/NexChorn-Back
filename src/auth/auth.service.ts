@@ -28,12 +28,12 @@ export class AuthService {
     // If password matches, return the user (omit sensitive fields if needed)
     return user;
   }
-
-  async login(email: string, pass: string, res: Response) {
+async login(email: string, pass: string, res: Response) {
   console.log("--- Intento de Login ---");
   
-  // 1. Buscar usuario
-  const user = await this.prisma.user.findUnique({ where: { email: email } });
+  // 1. Buscar usuario (Se mantiene findUnique si email es @unique en schema.prisma)
+  const user = await this.prisma.user.findUnique({ where: { email } });
+  
   if (!user) {
     console.log("Error: Usuario no encontrado");
     throw new UnauthorizedException('Credenciales incorrectas');
@@ -50,16 +50,19 @@ export class AuthService {
   const payload = { sub: user.id, email: user.email, role: user.role };
   const token = this.jwtService.sign(payload);
 
-  // 4. Configurar la cookie correctamente
-  // Nota: Elimina la propiedad "domain: 'undefined'", eso es incorrecto.
+  // 4. Configurar la cookie
   res.cookie('jwt', token, {
-    httpOnly: true,
-    secure: true,    // Obligatorio para sameSite: 'none'
-    sameSite: 'none', // Permite que la cookie viaje entre dominios (Frontend vs Backend)
+    httpOnly: true,       // Protege contra XSS
+    secure: true,         // Requerido al usar sameSite: 'none'
+    sameSite: 'none',     // Permite el envío cross-site (Render <-> Vercel)
     path: '/',
-    maxAge: 7 * 24 * 60 * 60 * 1000// 1 hora de duración
+    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días en milisegundos
   });
 
-  return { state: 'success', message: 'Login exitoso' };
+  return { 
+    state: 'success', 
+    message: 'Login exitoso',
+    user: { email: user.email, role: user.role } // Opcional: información pública
+  };
 }
 }
