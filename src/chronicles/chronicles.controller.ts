@@ -22,8 +22,9 @@ export class ChroniclesController {
   constructor(private readonly chroniclesService: ChroniclesService) {}
 
 
-
-  @UseGuards(JwtAuthGuard)
+ 
+  @Roles(Role.SUPERADMIN, Role.ADMIN, Role.USER)// Define el rol requerido para crear una crónica
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Post()
   async create(@Body() createChronicleDto: CreateChronicleDto, @Req() req: any) {
     // 1. Acceder al usuario inyectado por los Guards
