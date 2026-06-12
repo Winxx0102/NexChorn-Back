@@ -12,10 +12,9 @@ async function bootstrap() {
 
   // CORS configurado directamente para tu frontend
 app.enableCors({
-  // Asegúrate de que no haya espacios extra y sea la URL completa
-  origin: ['https://nex-chorn-front.vercel.app'],
+  origin: ['https://nex-chorn-front.vercel.app'], 
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-  credentials: true, // Esto es lo que causa el conflicto con '*'
+  credentials: true, 
   allowedHeaders: 'Content-Type, Accept, Authorization, X-Requested-With',
   preflightContinue: false,
   optionsSuccessStatus: 204,
