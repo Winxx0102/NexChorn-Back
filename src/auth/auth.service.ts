@@ -56,7 +56,7 @@ async login(email: string, pass: string, res: Response) {
     secure: true,         // Requerido al usar sameSite: 'none'
     sameSite: 'none',     // Permite el envío cross-site (Render <-> Vercel)
     path: '/',
-    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 días en milisegundos
+    maxAge: 2 * 60 * 60 * 1000 // 2 horas en milisegundos
   });
 
   return { 
